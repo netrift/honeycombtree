@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * @file
+ * Custom hook into the honeycomb system.
+ */
+
+
+/**
+ * Implements hook_form_FORM_ID_alter()
+ */
+function honeycomb_form_photo_node_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  // Need to make some custom changes.
+
+};

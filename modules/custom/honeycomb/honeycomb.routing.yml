@@ -1,0 +1,18 @@
+# Public pages
+honeycomb.vendor_category:
+  # List all the vendor categories on this page. 
+  path: '/categories'
+  defaults:
+    _content: '\Drupal\honeycomb\Controller\HoneyCombController::vendor_categories'
+    _title: 'Vendor Categories'
+  requirements:
+    _permission: 'access content'
+
+# Vendor Pages
+honeycomb.myphotos:
+  path: '/user/{user}/myphotos'
+  defaults:
+    _content: '\Drupal\honeycomb\Controller\HoneyCombController::vendor_photos'
+    _title: 'My Photos'
+  requirements:
+    _permission: 'access content'
