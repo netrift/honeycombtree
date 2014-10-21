@@ -1,0 +1,91 @@
+<?php
+
+/**
+ * @file 
+ *  Install file for honeycomb
+ */ 
+
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
+
+
+/**
+ * Implements hook_install();
+ */
+function honeycomb_install() {
+
+
+  // Now lets attached a term ref field to company node type
+  entity_create('field_storage_config', array(
+    'field_name' => 'taxonomy_vendor_category',
+    'entity_type' => 'node',
+    'type'  => 'taxonomy_term_reference',
+    'settings' => array(
+      'allowed_values' => array(
+        array(
+          'vocabulary' => 'vendor_category',
+          'parent' => 0,
+        ),
+      ),
+    ),
+  ))->save();
+   
+  $terms = array('Hair & Makeup', 'Florest', 'Event Planner');
+  // create default terms
+  foreach ($terms as $term) {
+    $term= entity_create('taxonomy_term', array(
+      'name' => $term,
+      'description' => '',
+      'parent' => array(0),
+      'vid' => 'vendor_category',
+    ));
+    $term->save();
+  };
+
+
+  // create the instance on the bundle
+  entity_create('field_config', array(
+    'field_name' => 'taxonomy_vendor_category',
+    'entity_type' => 'node',
+    'label' => 'Company',
+    'bundle' => 'company',
+    'required' => TRUE,
+  ))->save();
+
+  // Assign form display for the 'default' form mode.
+  entity_get_form_display('node', 'company', 'default')
+    ->setComponent('taxonomy_vendor_category', array(
+      'type' => 'options_select',
+  ))
+  ->save();
+
+
+  // do not allow company node type to be deleted
+  $locked = Drupal::state()->get('node.type.locked');
+  $locked['company'] = 'company';
+  $locked['vendor_image'] = 'vendor_image';
+  Drupal::state()->set('node.type.locked', $locked);
+
+};
+
+
+/**
+ * Implements hook_uninstall()
+ */
+function honeycomb_uninstall() {
+
+  if ($field_storage = FieldStorageConfig::loadByName('node', 'taxonomy_vendor_category')) {
+    $field_storage->delete();
+  }
+
+  // Purge field data now to allow taxonomy and options module to be uninstalled
+  // if this is the only field remaining.
+  field_purge_batch(10);
+  
+  // allow company to be deleted
+  $locked = Drupal::state()->get('node.type.locked');
+  unset($locked['company']);
+  unset($locked['vendor_image']);
+  Drupal::state()->set('node.type.locked', $locked);
+
+};

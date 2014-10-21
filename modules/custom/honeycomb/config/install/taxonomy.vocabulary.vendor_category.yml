@@ -1,0 +1,7 @@
+vid: vendor_category
+name: 'Vendor Category'
+descripton: 'Vendor Category for Companies'
+hierarchy: 1
+weight: -10
+status: true
+langcode: en

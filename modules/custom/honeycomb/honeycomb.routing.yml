@@ -1,4 +1,20 @@
 # Public pages
+honeycomb.home:
+  # The defualt home page.
+  path: '/honeycomb/home'
+  defaults:
+    _content: '\Drupal\honeycomb\Controller\HoneyCombController::home'
+    _title: 'Vendors'
+  requirements:
+    _permission: 'access content'
+honeycomb.dashboard:
+  # The defualt member page.
+  path: '/dashboard'
+  defaults:
+    _content: '\Drupal\honeycomb\Controller\HoneyCombController::dashboard'
+    _title: 'Dashboard'
+  requirements:
+    _permission: 'access content'
 honeycomb.vendor_category:
   # List all the vendor categories on this page. 
   path: '/categories'
@@ -7,7 +23,6 @@ honeycomb.vendor_category:
     _title: 'Vendor Categories'
   requirements:
     _permission: 'access content'
-
 # Vendor Pages
 honeycomb.myphotos:
   path: '/user/{user}/myphotos'
