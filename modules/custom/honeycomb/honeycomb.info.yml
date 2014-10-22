@@ -1,6 +1,6 @@
 name: 'Honeycomb Vendor'
 type: module
 description: 'Custom module for the vendor selection smart system and custom site features.'
-package: 'Honey Comb'
+package: 'HoneyComb'
 version: 10.0
 core: 8.x

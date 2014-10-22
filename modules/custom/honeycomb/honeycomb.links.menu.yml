@@ -1,0 +1,4 @@
+honeycomb.dashboard:
+  title: Dashboard
+  route_name: honeycomb.dashboard
+  menu_name: main

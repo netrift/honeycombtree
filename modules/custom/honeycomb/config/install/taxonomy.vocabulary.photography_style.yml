@@ -1,0 +1,7 @@
+vid: photography_style
+name: 'Photography Style'
+descripton: 'Style of photography based on the image.'
+hierarchy: 1
+weight: -9
+status: true
+langcode: en

@@ -7,6 +7,7 @@
 
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\Core\Field;
 
 
 /**
@@ -30,10 +31,10 @@ function honeycomb_install() {
     ),
   ))->save();
    
-  $terms = array('Hair & Makeup', 'Florest', 'Event Planner');
+  $terms = array('Hair & Make-up', 'Florist', 'Event Planner', 'Photographer', 'Cakes','Deejays', 'Bridal Gowns', 'Tuxedos', 'Venues', 'Officants', 'Caterers', 'Videographers');
   // create default terms
   foreach ($terms as $term) {
-    $term= entity_create('taxonomy_term', array(
+    $term = entity_create('taxonomy_term', array(
       'name' => $term,
       'description' => '',
       'parent' => array(0),
@@ -42,12 +43,11 @@ function honeycomb_install() {
     $term->save();
   };
 
-
   // create the instance on the bundle
   entity_create('field_config', array(
     'field_name' => 'taxonomy_vendor_category',
     'entity_type' => 'node',
-    'label' => 'Company',
+    'label' => 'Category',
     'bundle' => 'company',
     'required' => TRUE,
   ))->save();
@@ -58,6 +58,51 @@ function honeycomb_install() {
       'type' => 'options_select',
   ))
   ->save();
+
+  // Now lets attached a term ref field to Vendor node type
+  entity_create('field_storage_config', array(
+    'field_name' => 'taxonomy_photography_style',
+    'entity_type' => 'node',
+    'type'  => 'taxonomy_term_reference',
+    'cardinality' => -1,
+    'settings' => array(
+      'allowed_values' => array(
+        array(
+          'vocabulary' => 'photography_style',
+          'parent' => 0,
+        ),
+      ),
+    ),
+  ))->save();
+
+  $terms = array('Photojournalism', 'Soft & Dreamy', 'Traditional / Classic', 'Contemporary / Mordern', 'Artistic / Fine Art');
+  // create default terms
+  foreach ($terms as $term) {
+    $term = entity_create('taxonomy_term', array(
+      'name' => $term,
+      'description' => '',
+      'parent' => array(0),
+      'vid' => 'photography_style',
+    ));
+    $term->save();
+  };
+
+  // create the instance on the bundle
+  entity_create('field_config', array(
+    'field_name' => 'taxonomy_photography_style',
+    'entity_type' => 'node',
+    'label' => 'Photo Style',
+    'bundle' => 'vendor_image',
+    'required' => TRUE,
+  ))->save();
+
+  // Assign form display for the 'default' form mode.
+  entity_get_form_display('node', 'vendor_image', 'default')
+    ->setComponent('taxonomy_photography_style', array(
+      'type' => 'options_buttons',
+  ))
+  ->save();
+
 
 
   // do not allow company node type to be deleted
@@ -77,15 +122,20 @@ function honeycomb_uninstall() {
   if ($field_storage = FieldStorageConfig::loadByName('node', 'taxonomy_vendor_category')) {
     $field_storage->delete();
   }
+  if ($field_storage = FieldStorageConfig::loadByName('node', 'taxonomy_photography_style')) {
+    $field_storage->delete();
+  }
 
   // Purge field data now to allow taxonomy and options module to be uninstalled
   // if this is the only field remaining.
   field_purge_batch(10);
-  
+
   // allow company to be deleted
   $locked = Drupal::state()->get('node.type.locked');
   unset($locked['company']);
   unset($locked['vendor_image']);
   Drupal::state()->set('node.type.locked', $locked);
+
+  drupal_set_message('Still need to delete "Vendor Category" taxonomy');
 
 };
