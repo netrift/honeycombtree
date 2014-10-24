@@ -5,6 +5,15 @@
  * Custom hook into the honeycomb system.
  */
 
+/**
+ * ****Depreciated ***
+ * Implements hook_page_alter();
+ * USE - hook_page_attachments();
+ */
+function honeycomb_page_alter(&$page) {
+  $page['#attached']['library'][] = 'honeycomb/honeycomb.all-pages';
+}
+
 
 /**
  * Implements hook_form_FORM_ID_alter()
@@ -13,3 +22,4 @@ function honeycomb_form_photo_node_form_alter(&$form, \Drupal\Core\Form\FormStat
   // Need to make some custom changes.
 
 };
+

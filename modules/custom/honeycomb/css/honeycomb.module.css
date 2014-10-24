@@ -1,0 +1,14 @@
+/**
+ * CSS file that is loaded on all pages.
+ */
+a {
+  border: none !important;
+}
+
+
+/** FInd My Style Page **/
+.selection-photo {
+  width: 20%;
+  margin-right: 5px;
+  margin-bottom: 5px;
+}

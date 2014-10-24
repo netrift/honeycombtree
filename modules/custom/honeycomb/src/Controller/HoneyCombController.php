@@ -8,6 +8,7 @@ namespace Drupal\honeycomb\Controller;
 
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
+use Drupal\image\Entity\ImageStyle;
 
 /**
  * Main HoneyComb
@@ -18,7 +19,7 @@ class HoneyCombController {
   /*
    * Default Vendor Home page.
    */
-  public function home() {
+  public function vendor_photos($uid) {
     return array(
       '#markup' => t('Default Homage page. List all the Vendor Images Masonary format here.'),
     );
@@ -33,7 +34,7 @@ class HoneyCombController {
 
     //$roles = $user->getRoles(TRUE); // don't get defualt locked roles
 
-    // Generate the add link . First heck to make sure that user
+    // Generate the add link . First check to make sure that user
     // doesn't already have a company added.
     $add_url = Url::fromRoute('node.add', array('node_type' => 'company'));
     $add_url = \Drupal::l('Add New Company', $add_url);
@@ -62,14 +63,64 @@ class HoneyCombController {
   }
 
   /* 
-   * List all Vendor categories 
+   * Default Home Page 
    * 
-   * @param $uid
-   *    The account user id
    */
-  public function vendor_photos($uid) {
+  public function home() {
+
+    $query = db_select('node_field_data', 'n');
+    $query->leftJoin('file_usage', 'fu', 'n.nid = fu.id');
+    $query->leftJoin('file_managed', 'fm', 'fu.fid = fm.fid');
+
+    $query->fields('fm', array('uri'));
+    $query->fields('n', array('nid'));
+
+    $query->condition('n.status', 1);
+    $query->condition('n.type', 'vendor_image');
+
+    $query->orderRandom();
+    $result = $query->execute();
+
+    $output = $images = '';
+
+    foreach ($result as $record) {
+      $image_url = ImageStyle::load('image_masonry')->buildUrl($record->uri);
+      $image = '<img src="' . $image_url  . '">';
+      $options = array(
+        'html' => TRUE,
+        'attributes' => array(
+          'class' => array('colorbox'),
+        )
+      );
+      $path = file_create_url($record->uri);
+      $full_url = Url::fromUri($path, $options);
+      $image_link = \Drupal::l($image, $full_url, array('html' => TRUE));
+
+      $images .= '
+      <div class="selection-photo">
+        ' . $image_link . '
+        <div id="like-action-' . $record->nid . '" class="like-wrapper">
+        Ken Ken
+        </div>
+      </div>
+      ';
+    };
+    $output = '
+    <div id="photo-display-container">
+        ' . $images . '
+    </div>
+    ';
+
     return array(
-      '#markup' => t('List all Vendor Photos'),
+      '#markup' => $output ,
+      '#attached' => array (
+        'library' => array (
+          'honeycomb/honeycomb.image-selection',
+        ),
+      ),
     );
+
   }
+
+
 }

@@ -4,7 +4,7 @@ honeycomb.home:
   path: '/honeycomb/home'
   defaults:
     _content: '\Drupal\honeycomb\Controller\HoneyCombController::home'
-    _title: 'Vendors'
+    _title: 'Find My Style'
   requirements:
     _permission: 'access content'
 honeycomb.dashboard:

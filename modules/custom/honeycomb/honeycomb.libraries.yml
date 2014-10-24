@@ -1,0 +1,16 @@
+honeycomb.all-pages:
+  version: 1.0
+  js:
+    js/honeycomb.js: {}
+  css:
+    component:
+      css/honeycomb.module.css: {}
+  dependencies:
+    - core/jquery
+
+honeycomb.image-selection:
+  varion: 1.0
+  js:
+    js/image_select.js: {}
+    js/masonry.min.js: {}
+    js/imagesloaded.min.js: {}
