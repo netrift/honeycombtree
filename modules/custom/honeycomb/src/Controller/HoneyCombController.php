@@ -6,9 +6,12 @@
 
 namespace Drupal\honeycomb\Controller;
 
+use Drupal\honeycomb\HoneyCombUtility;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\image\Entity\ImageStyle;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\ReplaceCommand;
 
 /**
  * Main HoneyComb
@@ -96,11 +99,14 @@ class HoneyCombController {
       $full_url = Url::fromUri($path, $options);
       $image_link = \Drupal::l($image, $full_url, array('html' => TRUE));
 
+      $like_link = HoneyCombUtility::ajax_like_link('like', $record->nid);
+      $like_link = \Drupal::l('Like', $like_link, array('html' => TRUE));
+
       $images .= '
       <div class="selection-photo">
         ' . $image_link . '
         <div id="like-action-' . $record->nid . '" class="like-wrapper">
-        Ken Ken
+          ' . $like_link . '
         </div>
       </div>
       ';
@@ -110,6 +116,7 @@ class HoneyCombController {
         ' . $images . '
     </div>
     ';
+
 
     return array(
       '#markup' => $output ,
@@ -122,5 +129,18 @@ class HoneyCombController {
 
   }
 
+  /**
+   * Like Action Ajax CallBack
+   */
+  public function like_action($action = 'like' , $nid = 0 , $title = '') {
+
+    $response = new AjaxResponse();
+    $response->addCommand( new ReplaceCommand(
+      '#like-action-' . $nid, 
+      'KENKENKNEKE' . $nid
+    ));
+    
+    return $response;
+  }
 
 }
