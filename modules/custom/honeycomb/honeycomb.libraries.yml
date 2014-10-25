@@ -7,6 +7,7 @@ honeycomb.all-pages:
       css/honeycomb.module.css: {}
   dependencies:
     - core/jquery
+    - core/drupal.ajax
 
 honeycomb.image-selection:
   varion: 1.0

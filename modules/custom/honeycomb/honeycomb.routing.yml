@@ -7,6 +7,7 @@ honeycomb.home:
     _title: 'Find My Style'
   requirements:
     _permission: 'access content'
+
 honeycomb.dashboard:
   # The defualt member page.
   path: '/dashboard'
@@ -15,6 +16,7 @@ honeycomb.dashboard:
     _title: 'Dashboard'
   requirements:
     _permission: 'access content'
+
 honeycomb.vendor_category:
   # List all the vendor categories on this page. 
   path: '/categories'
@@ -23,11 +25,22 @@ honeycomb.vendor_category:
     _title: 'Vendor Categories'
   requirements:
     _permission: 'access content'
+
 # Vendor Pages
 honeycomb.myphotos:
   path: '/user/{user}/myphotos'
   defaults:
     _content: '\Drupal\honeycomb\Controller\HoneyCombController::vendor_photos'
     _title: 'My Photos'
+  requirements:
+    _permission: 'access content'
+
+# AJAX section
+#
+# Like action
+honeycomb.like_action:
+  path: 'honeycomb/image-like/{action}/{nid}'
+  defaults:
+    _content: '\Drupal\honeycomb\Controller\HoneyCombController::like_action'
   requirements:
     _permission: 'access content'
