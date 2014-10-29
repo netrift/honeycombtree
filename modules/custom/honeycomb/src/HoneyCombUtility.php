@@ -16,7 +16,8 @@ use Drupal\Core\Url;
 class HoneyCombUtility {
 
   /**
-   * Output the ajax like/love link. 
+   * @param $action
+   *  The like or unlike.
    */  
   public static function ajax_like_link( $action = 'like', $nid = 0, $title = '') {
 
@@ -30,7 +31,46 @@ class HoneyCombUtility {
     );
     $link = Url::fromUri($path, $options);
 
-    return $link;
+    return \Drupal::l($title, $link, array('html' => TRUE));
   }
+  /**
+   * @param $uid
+   *  User ID
+   * @param $fid
+   *  File (Photo) ID
+   * @param $tid
+   *  Term id -- vendor category
+   */ 
+  public static function photo_like($uid, $fid, $tid = 0) {
+
+    if ($fid) {
+
+      $fields = array('uid' => $uid, 'fid' => $fid, 'tid' => $tid, 'created' => time());
+      db_insert('honeycomb_like')
+        ->fields($fields)
+        ->execute();
+
+    }
+
+  }
+
+  /**
+   * @param $uid
+   *  User ID
+   * @param $fid
+   *  File (Photo) ID
+   * @param $tid
+   *  Term id -- vendor category
+   */
+  public static function photo_unlike($uid, $fid, $tid = 0) {
+    if ($fid) {
+      db_delete('honeycomb_like')
+        ->condition('uid', $uid)
+        ->condition('fid', $fid)
+        ->condition('tid', $tid)
+        ->execute();
+    };
+  }
+
 
 }

@@ -11,7 +11,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\ReplaceCommand;
+use Drupal\Core\Ajax\HtmlCommand;
 
 /**
  * Main HoneyComb
@@ -99,8 +99,12 @@ class HoneyCombController {
       $full_url = Url::fromUri($path, $options);
       $image_link = \Drupal::l($image, $full_url, array('html' => TRUE));
 
-      $like_link = HoneyCombUtility::ajax_like_link('like', $record->nid);
-      $like_link = \Drupal::l('Like', $like_link, array('html' => TRUE));
+      if (empty($_SESSION['like-images'][$record->nid])) {
+        $like_link = HoneyCombUtility::ajax_like_link('like', $record->nid, 'Like');
+      }
+      else {
+        $like_link = HoneyCombUtility::ajax_like_link('unlike', $record->nid, 'UnLike');
+      };
 
       $images .= '
       <div class="selection-photo">
@@ -133,11 +137,22 @@ class HoneyCombController {
    * Like Action Ajax CallBack
    */
   public function like_action($action = 'like' , $nid = 0 , $title = '') {
+    $account = \Drupal::currentUser();
+
+    if ($action == 'like') {
+        $like_link = HoneyCombUtility::ajax_like_link('unlike', $nid, 'UnLike');
+        $_SESSION['like-images'][$nid] = $nid;
+        //HoneyCombUtility::photo_like($account->id(), $nid, $tid);
+    }
+    else {
+        $like_link = HoneyCombUtility::ajax_like_link('like', $nid, 'Like');
+        unset($_SESSION['like-images'][$nid]);
+    };
 
     $response = new AjaxResponse();
-    $response->addCommand( new ReplaceCommand(
+    $response->addCommand( new HtmlCommand(
       '#like-action-' . $nid, 
-      'KENKENKNEKE' . $nid
+      $like_link 
     ));
     
     return $response;
