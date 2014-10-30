@@ -1,0 +1,9 @@
+<div id="company-profile-{{ nid }}">
+  <div class="logo"><img src="{{ logo_url }}"></div>
+  <div class="category">{{ vendor_category }}</div>
+  <div id="photo-display-container">
+    {% for fid, image_url in image_urls %}
+      <div class="selection-photo company-images" id="{{ fid }}"><img src="{{ image_url }}"></div>
+    {% endfor %}
+  </div>
+</div>

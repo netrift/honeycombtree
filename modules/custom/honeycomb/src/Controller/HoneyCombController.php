@@ -12,6 +12,8 @@ use Drupal\Core\Url;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\node\Entity\Node;
+
 
 /**
  * Main HoneyComb
@@ -21,11 +23,49 @@ class HoneyCombController {
 
   /*
    * Default Vendor Home page.
+   * 
+   * @param $nid 
+   *  The company node id
    */
-  public function vendor_photos($uid) {
+  public function company_profile($vendor_category, $nid) {
+    $company = Node::load($nid)->toArray();
+    // Need to gather all images that have been linked to this company
+    $images = $this->company_images($nid);
     return array(
-      '#markup' => t('Default Homage page. List all the Vendor Images Masonary format here.'),
+      '#title' => $company['title'][0]['value'], // page title
+      '#theme' => 'company_profile',
+      '#company' => $company,
+      '#images' => $images,  // array of uri images.
+      '#attached' => array (
+        'library' => array (
+          'honeycomb/honeycomb.image-selection',
+        ),
+      ),
     );
+  }
+
+  /**
+   * Return Images tagged to the company
+   *
+   * @param $nid
+   *  The nid of the company node type.
+   *  
+   * @return
+   *  Array of images with their fid.   
+   */
+  public function company_images($nid) {
+    $query = db_select('node__field_photographer', 'p');
+    $query->leftJoin('file_managed', 'fm', 'p.entity_id = fm.fid');
+    $query->fields('fm', array('uri','fid'));
+    $query->condition('p.bundle', 'vendor_image');
+    $query->condition('p.field_photographer_target_id', 8);
+    $result = $query->execute();
+
+    $images = array();
+    foreach ($result as $record) {
+      $images[$record->fid] = $record->uri;
+    };
+    return $images;
   }
 
   /*
@@ -86,6 +126,8 @@ class HoneyCombController {
 
     $output = $images = '';
 
+    // This would normally be the vendor category that the user is trying to find. 
+    $tid = 0; 
     foreach ($result as $record) {
       $image_url = ImageStyle::load('image_masonry')->buildUrl($record->uri);
       $image = '<img src="' . $image_url  . '">';
@@ -100,10 +142,10 @@ class HoneyCombController {
       $image_link = \Drupal::l($image, $full_url, array('html' => TRUE));
 
       if (empty($_SESSION['like-images'][$record->nid])) {
-        $like_link = HoneyCombUtility::ajax_like_link('like', $record->nid, 'Like');
+        $like_link = HoneyCombUtility::ajax_like_link('like', $record->nid, $tid, 'Like');
       }
       else {
-        $like_link = HoneyCombUtility::ajax_like_link('unlike', $record->nid, 'UnLike');
+        $like_link = HoneyCombUtility::ajax_like_link('unlike', $record->nid, $tid, 'UnLike');
       };
 
       $images .= '
@@ -136,17 +178,18 @@ class HoneyCombController {
   /**
    * Like Action Ajax CallBack
    */
-  public function like_action($action = 'like' , $nid = 0 , $title = '') {
+  public function like_action($action = 'like' , $nid = 0, $tid = 0 , $title = '') {
     $account = \Drupal::currentUser();
 
     if ($action == 'like') {
-        $like_link = HoneyCombUtility::ajax_like_link('unlike', $nid, 'UnLike');
+        $like_link = HoneyCombUtility::ajax_like_link('unlike', $nid, $tid, 'UnLike');
         $_SESSION['like-images'][$nid] = $nid;
-        //HoneyCombUtility::photo_like($account->id(), $nid, $tid);
+        HoneyCombUtility::photo_like($account->id(), $nid, $tid);
     }
     else {
-        $like_link = HoneyCombUtility::ajax_like_link('like', $nid, 'Like');
+        $like_link = HoneyCombUtility::ajax_like_link('like', $nid, $tid, 'Like');
         unset($_SESSION['like-images'][$nid]);
+        HoneyCombUtility::photo_unlike($account->id(), $nid, $tid);
     };
 
     $response = new AjaxResponse();

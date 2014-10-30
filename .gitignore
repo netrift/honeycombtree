@@ -11,6 +11,10 @@
 sites/*/settings*.php
 sites/*/services*.yml
 
+.DS_Store
+modules/.DS_Store
+sites/.DS_Store
+
 # Ignore paths that contain user-generated content.
 sites/*/files
 sites/*/private

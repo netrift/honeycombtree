@@ -27,10 +27,11 @@ honeycomb.vendor_category:
     _permission: 'access content'
 
 # Vendor Pages
-honeycomb.myphotos:
-  path: '/user/{user}/myphotos'
+# Company Profile Page.
+honeycomb.vendor_page:
+  path: '/vendor/{vendor_category}/{nid}'
   defaults:
-    _content: '\Drupal\honeycomb\Controller\HoneyCombController::vendor_photos'
+    _content: '\Drupal\honeycomb\Controller\HoneyCombController::company_profile'
     _title: 'My Photos'
   requirements:
     _permission: 'access content'
@@ -39,7 +40,7 @@ honeycomb.myphotos:
 #
 # Like action
 honeycomb.like_action:
-  path: 'honeycomb/image-like/{action}/{nid}'
+  path: 'honeycomb/image-like/{action}/{nid}/{tid}'
   defaults:
     _content: '\Drupal\honeycomb\Controller\HoneyCombController::like_action'
   requirements:

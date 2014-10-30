@@ -17,24 +17,39 @@ use Drupal\taxonomy\Entity\Vocabulary;
  */
 function honeycomb_install() {
 
+  // Now lets attached a term ref field to company node type
+  entity_create('field_storage_config', array(
+    'field_name' => 'taxonomy_vendor_category',
+    'entity_type' => 'node',
+    'type'  => 'taxonomy_term_reference',
+    'settings' => array(
+      'allowed_values' => array(
+        array(
+          'vocabulary' => 'vendor_category',
+          'parent' => 0,
+        ),
+      ),
+    ),
+  ))->save();
+  // create the instance on the bundle
+  entity_create('field_config', array(
+    'field_name' => 'taxonomy_vendor_category',
+    'entity_type' => 'node',
+    'label' => 'Category',
+    'bundle' => 'company',
+    'required' => TRUE,
+  ))->save();
+
+  // Assign form display for the 'default' form mode.
+  entity_get_form_display('node', 'company', 'default')
+    ->setComponent('taxonomy_vendor_category', array(
+    'type' => 'options_select',
+  ))
+  ->save();
+
   $vid = Vocabulary::load('vendor_category')->id();
   $tree = \Drupal::entityManager()->getStorage('taxonomy_term')->loadTree($vid);
   if (!$tree) {
-    // Now lets attached a term ref field to company node type
-    entity_create('field_storage_config', array(
-      'field_name' => 'taxonomy_vendor_category',
-      'entity_type' => 'node',
-      'type'  => 'taxonomy_term_reference',
-      'settings' => array(
-        'allowed_values' => array(
-          array(
-            'vocabulary' => 'vendor_category',
-            'parent' => 0,
-          ),
-        ),
-      ),
-    ))->save();
-   
     $terms = array('Hair & Make-up', 'Florist', 'Event Planner', 'Photographer', 'Cakes','Deejays', 'Bridal Gowns', 'Tuxedos', 'Venues', 'Officants', 'Caterers', 'Videographers');
     // create default terms
     foreach ($terms as $term) {
@@ -46,44 +61,43 @@ function honeycomb_install() {
       ));
       $term->save();
     };
-
-    // create the instance on the bundle
-    entity_create('field_config', array(
-      'field_name' => 'taxonomy_vendor_category',
-      'entity_type' => 'node',
-      'label' => 'Category',
-      'bundle' => 'company',
-      'required' => TRUE,
-    ))->save();
-
-    // Assign form display for the 'default' form mode.
-    entity_get_form_display('node', 'company', 'default')
-      ->setComponent('taxonomy_vendor_category', array(
-        'type' => 'options_select',
-    ))
-    ->save();
-
   };
+
+  // Now lets attached a term ref field to Vendor node type
+  entity_create('field_storage_config', array(
+    'field_name' => 'taxonomy_photography_style',
+    'entity_type' => 'node',
+    'type'  => 'taxonomy_term_reference',
+    'cardinality' => -1,
+    'settings' => array(
+      'allowed_values' => array(
+        array(
+          'vocabulary' => 'photography_style',
+          'parent' => 0,
+        ),
+      ),
+    ),
+  ))->save();
+
+  // create the instance on the bundle
+  entity_create('field_config', array(
+    'field_name' => 'taxonomy_photography_style',
+    'entity_type' => 'node',
+    'label' => 'Photo Style',
+    'bundle' => 'vendor_image',
+    'required' => TRUE,
+  ))->save();
+
+  // Assign form display for the 'default' form mode.
+  entity_get_form_display('node', 'vendor_image', 'default')
+    ->setComponent('taxonomy_photography_style', array(
+      'type' => 'options_buttons',
+  ))
+  ->save();
 
   $vid = Vocabulary::load('photography_style')->id();
   $tree = \Drupal::entityManager()->getStorage('taxonomy_term')->loadTree($vid);
   if (!$tree) {
-    // Now lets attached a term ref field to Vendor node type
-    entity_create('field_storage_config', array(
-      'field_name' => 'taxonomy_photography_style',
-      'entity_type' => 'node',
-      'type'  => 'taxonomy_term_reference',
-      'cardinality' => -1,
-      'settings' => array(
-        'allowed_values' => array(
-          array(
-            'vocabulary' => 'photography_style',
-            'parent' => 0,
-          ),
-        ),
-      ),
-    ))->save();
-
     $terms = array('Photojournalism', 'Soft & Dreamy', 'Traditional / Classic', 'Contemporary / Mordern', 'Artistic / Fine Art');
     // create default terms
     foreach ($terms as $term) {
@@ -95,26 +109,7 @@ function honeycomb_install() {
       ));
       $term->save();
     };
-
-    // create the instance on the bundle
-    entity_create('field_config', array(
-      'field_name' => 'taxonomy_photography_style',
-      'entity_type' => 'node',
-      'label' => 'Photo Style',
-      'bundle' => 'vendor_image',
-      'required' => TRUE,
-    ))->save();
-
-    // Assign form display for the 'default' form mode.
-    entity_get_form_display('node', 'vendor_image', 'default')
-      ->setComponent('taxonomy_photography_style', array(
-        'type' => 'options_buttons',
-    ))
-    ->save();
-  
   };
-
-
 
   // do not allow company node type to be deleted
   $locked = Drupal::state()->get('node.type.locked');

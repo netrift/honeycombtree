@@ -19,9 +19,9 @@ class HoneyCombUtility {
    * @param $action
    *  The like or unlike.
    */  
-  public static function ajax_like_link( $action = 'like', $nid = 0, $title = '') {
+  public static function ajax_like_link( $action = 'like', $nid = 0, $tid = 0, $title = '') {
 
-    $path = 'base://honeycomb/image-like/' . $action . '/'  . $nid;
+    $path = 'base://honeycomb/image-like/' . $action . '/'  . $nid . '/' . $tid;
 
     $options = array(
       'html' => TRUE,
@@ -41,11 +41,11 @@ class HoneyCombUtility {
    * @param $tid
    *  Term id -- vendor category
    */ 
-  public static function photo_like($uid, $fid, $tid = 0) {
+  public static function photo_like($uid, $nid, $tid = 0) {
 
-    if ($fid) {
+    if ($nid && $uid > 0) {
 
-      $fields = array('uid' => $uid, 'fid' => $fid, 'tid' => $tid, 'created' => time());
+      $fields = array('uid' => $uid, 'nid' => $nid, 'tid' => $tid, 'created' => time());
       db_insert('honeycomb_like')
         ->fields($fields)
         ->execute();
@@ -62,14 +62,16 @@ class HoneyCombUtility {
    * @param $tid
    *  Term id -- vendor category
    */
-  public static function photo_unlike($uid, $fid, $tid = 0) {
-    if ($fid) {
+  public static function photo_unlike($uid, $nid, $tid = 0) {
+
+    if ($nid && $uid > 0) {
       db_delete('honeycomb_like')
         ->condition('uid', $uid)
-        ->condition('fid', $fid)
+        ->condition('nid', $nid)
         ->condition('tid', $tid)
         ->execute();
     };
+
   }
 
 
