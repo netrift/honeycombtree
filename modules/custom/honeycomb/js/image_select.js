@@ -18,6 +18,13 @@
       $container.hide().css('opacity',1).fadeIn();
     });
 
+    // Colour init.
+    $('a.colorbox').colorbox({
+      scalePhotos: true,
+      maxWidth: '90%',
+      maxHeight: '90%',
+    });
+
   });
 
 })(jQuery);

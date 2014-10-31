@@ -5,6 +5,7 @@ honeycomb.all-pages:
   css:
     component:
       css/honeycomb.module.css: {}
+      css/colorbox.css: {}
   dependencies:
     - core/jquery
     - core/drupal.ajax
@@ -15,3 +16,4 @@ honeycomb.image-selection:
     js/image_select.js: {}
     js/masonry.min.js: {}
     js/imagesloaded.min.js: {}
+    js/jquery.colorbox-min.js: {}

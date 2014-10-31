@@ -16,6 +16,30 @@ use Drupal\Core\Url;
 class HoneyCombUtility {
 
   /**
+   * Return Images tagged to the company
+   *
+   * @param $nid
+   *  The nid of the company node type.
+   *  
+   * @return
+   *  Array of images uri with their fid.   
+   */
+  public static function company_images($nid) {
+    $query = db_select('node__field_photographer', 'p');
+    $query->leftJoin('file_managed', 'fm', 'p.entity_id = fm.fid');
+    $query->fields('fm', array('uri','fid'));
+    $query->condition('p.bundle', 'vendor_image');
+    $query->condition('p.field_photographer_target_id', 8);
+    $result = $query->execute();
+
+    $images = array();
+    foreach ($result as $record) {
+      $images[$record->fid] = $record->uri;
+    };
+    return $images;
+  }
+
+  /**
    * @param $action
    *  The like or unlike.
    */  

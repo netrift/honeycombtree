@@ -5,8 +5,8 @@
  */
 
 namespace Drupal\honeycomb\Controller;
-
 use Drupal\honeycomb\HoneyCombUtility;
+
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\image\Entity\ImageStyle;
@@ -30,7 +30,7 @@ class HoneyCombController {
   public function company_profile($vendor_category, $nid) {
     $company = Node::load($nid)->toArray();
     // Need to gather all images that have been linked to this company
-    $images = $this->company_images($nid);
+    $images = HoneyCombUtility::company_images($nid);
     return array(
       '#title' => $company['title'][0]['value'], // page title
       '#theme' => 'company_profile',
@@ -38,34 +38,10 @@ class HoneyCombController {
       '#images' => $images,  // array of uri images.
       '#attached' => array (
         'library' => array (
-          'honeycomb/honeycomb.image-selection',
+          'honeycomb/honeycomb.image-selection', // masonry display
         ),
       ),
     );
-  }
-
-  /**
-   * Return Images tagged to the company
-   *
-   * @param $nid
-   *  The nid of the company node type.
-   *  
-   * @return
-   *  Array of images with their fid.   
-   */
-  public function company_images($nid) {
-    $query = db_select('node__field_photographer', 'p');
-    $query->leftJoin('file_managed', 'fm', 'p.entity_id = fm.fid');
-    $query->fields('fm', array('uri','fid'));
-    $query->condition('p.bundle', 'vendor_image');
-    $query->condition('p.field_photographer_target_id', 8);
-    $result = $query->execute();
-
-    $images = array();
-    foreach ($result as $record) {
-      $images[$record->fid] = $record->uri;
-    };
-    return $images;
   }
 
   /*
@@ -129,43 +105,20 @@ class HoneyCombController {
     // This would normally be the vendor category that the user is trying to find. 
     $tid = 0; 
     foreach ($result as $record) {
-      $image_url = ImageStyle::load('image_masonry')->buildUrl($record->uri);
-      $image = '<img src="' . $image_url  . '">';
-      $options = array(
-        'html' => TRUE,
-        'attributes' => array(
-          'class' => array('colorbox'),
-        )
+      $image = array(
+        '#theme' => 'masonry_image', 
+        '#image_uri' => $record->uri, 
+        '#image_nid' => $record->nid, 
+        '#image_category_id' => $tid
       );
-      $path = file_create_url($record->uri);
-      $full_url = Url::fromUri($path, $options);
-      $image_link = \Drupal::l($image, $full_url, array('html' => TRUE));
-
-      if (empty($_SESSION['like-images'][$record->nid])) {
-        $like_link = HoneyCombUtility::ajax_like_link('like', $record->nid, $tid, 'Like');
-      }
-      else {
-        $like_link = HoneyCombUtility::ajax_like_link('unlike', $record->nid, $tid, 'UnLike');
-      };
-
-      $images .= '
-      <div class="selection-photo">
-        ' . $image_link . '
-        <div id="like-action-' . $record->nid . '" class="like-wrapper">
-          ' . $like_link . '
-        </div>
-      </div>
-      ';
+      $images .= drupal_render($image);
     };
-    $output = '
-    <div id="photo-display-container">
-        ' . $images . '
-    </div>
-    ';
-
 
     return array(
-      '#markup' => $output ,
+      '#theme' => 'masonry_display',
+      '#prefix' => '<div id="photo-display-container">',
+      '#markup' => $images ,
+      '#suffix' => '</div>',
       '#attached' => array (
         'library' => array (
           'honeycomb/honeycomb.image-selection',

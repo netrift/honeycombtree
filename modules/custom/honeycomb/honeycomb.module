@@ -4,9 +4,8 @@
  * @file
  * Custom hook into the honeycomb system.
  */
-use Drupal\taxonomy\Entity\Term;
-Use Drupal\file\Entity\File;
-use Drupal\image\Entity\ImageStyle;
+
+include_once dirname(__FILE__) . '/honeycomb.theme.inc';
 
 /**
  * ****Depreciated ***
@@ -34,41 +33,9 @@ function honeycomb_theme() {
     'company_profile' => array (
       'variables' => array('company' => NULL, 'images' => array()),
     ),
+    'masonry_image' => array (
+      'variables' => array('image_uri' => NULL, 'image_nid' => NULL, 'image_category_id' => NULL),
+    ),
   );
 };
 
-/**
- * Perpares veriables for company profile template
- *
- * Default template: company-profile.html.twig 
- * 
- * @param array $variables;
- *  An array containing the following elements:
- *  - title: The company name
- *  - nid: The id of the company
- */
-function template_preprocess_company_profile(&$variables) {
-  $company = $variables['company'];
-  if ($company) {
-    $tid =$company['taxonomy_vendor_category'][0]['target_id'];
-    $term = Term::load($tid);
-    // Logo
-    $fid =$company['field_image'][0]['target_id'];
-    $image_uri = File::load($fid)->toArray()['uri'][0]['value'];
-    $variables['logo_url'] = ImageStyle::load('medium')->buildUrl($image_uri);
-
-    $variables['nid'] =$company['nid'][0]['value'];
-    $variables['title'] =$company['title'][0]['value'];
-    $variables['body'] =$company['body'][0]['value'];
-    $variables['vendor_category'] = $term->getName();
-
-    // Vendor Images attached to this Company
-    if (is_array($variables['images'])) {
-      foreach ($variables['images'] as $fid => $uri) {
-        $variables['image_urls'][$fid] = ImageStyle::load('image_masonry')->buildUrl($uri);
-      };
-    };
-  };
-
-
-};
