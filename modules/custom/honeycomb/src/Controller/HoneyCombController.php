@@ -9,10 +9,14 @@ use Drupal\honeycomb\HoneyCombUtility;
 
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
-use Drupal\image\Entity\ImageStyle;
 use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\OpenModalDialogCommand;
 use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\Core\Controller\ControllerBase;
+use Drupal\image\Entity\ImageStyle;
 use Drupal\node\Entity\Node;
+use Symfony\Component\HttpFoundation\Response;
+use Drupal\Component\Utility\UrlHelper;
 
 
 /**
@@ -150,7 +154,34 @@ class HoneyCombController {
       '#like-action-' . $nid, 
       $like_link 
     ));
+    $response->addCommand( new HtmlCommand(
+      '#modal-like-action-' . $nid, 
+      $like_link 
+    ));
     
+    return $response;
+  }
+
+  /**
+   * Model window to display colorbox image and links.
+   */ 
+  public function modal_image($image_id = 0, $tid = 0) {
+
+    $response = new Response();
+    $output = '';
+    $query = \Drupal::request()->query->all();
+    if ($query['imgurl']) {
+      $image = array(
+        '#theme' => 'image_colorbox_modal', 
+        '#image_uri' => unserialize($query['imgurl']), 
+        '#image_nid' => $image_id, 
+        '#image_category_id' => $tid
+      );
+      $image = drupal_render($image);
+    };
+
+    $response->setContent($image);
+
     return $response;
   }
 

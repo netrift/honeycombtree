@@ -50,7 +50,8 @@ class HoneyCombUtility {
     $options = array(
       'html' => TRUE,
       'attributes' => array(
-      'class' => array('use-ajax'),
+      'class' => array('use-ajax', 'like-link'),
+      //'class' => array('my-ajax'),
       )
     );
     $link = Url::fromUri($path, $options);

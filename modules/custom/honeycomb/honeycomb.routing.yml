@@ -45,3 +45,13 @@ honeycomb.like_action:
     _content: '\Drupal\honeycomb\Controller\HoneyCombController::like_action'
   requirements:
     _permission: 'access content'
+
+
+# Model window display image with colorbox
+honeycomb.modal_image:
+  path: 'honeycomb/modal-image/{image_id}'
+  defaults:
+    _content: '\Drupal\honeycomb\Controller\HoneyCombController::modal_image'
+  requirements:
+    _permission: 'access content'
+

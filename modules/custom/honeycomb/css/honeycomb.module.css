@@ -8,7 +8,14 @@ a {
 
 /** FInd My Style Page **/
 .selection-photo {
-  width: 250px;
   margin-right: 5px;
   margin-bottom: 5px;
+}
+.selection-photo-modal {
+  max-height: 100%;
+  max-width: 90%;
+  height: 100%;
+}
+.selection-photo-modal img.modal {
+  max-height: 100%;
 }

@@ -34,6 +34,9 @@ function honeycomb_theme() {
       'variables' => array('company' => NULL, 'images' => array()),
     ),
     'masonry_image' => array (
+      'variables' => array('mode' => NULL,'image_uri' => NULL, 'image_nid' => NULL, 'image_category_id' => NULL),
+    ),
+    'image_colorbox_modal' => array (
       'variables' => array('image_uri' => NULL, 'image_nid' => NULL, 'image_category_id' => NULL),
     ),
   );
