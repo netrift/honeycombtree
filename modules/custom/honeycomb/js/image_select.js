@@ -31,8 +31,13 @@
     $('a.colorbox').colorbox({
       scalePhotos: true,
       srolling: false,
-      width: '90%',
-      height: '90%',
+      width: '80%',
+      height: '95%',
+      onComplete: function() {
+        var x = $('.modal').width();
+        var y = $('#cboxContent').height();
+        $(this).colorbox.resize({width:x, height:y});
+      }
     });
 
   }); // end document
